@@ -118,7 +118,7 @@ var filter = function (item) {
 
 // TODO: Отслеживать изменения конфига и перезагружать
 
-var config = json('nyantifier.json');
+var config = json('nyatifier.json');
 
 var token = file('access_token');
 
