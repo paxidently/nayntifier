@@ -1,0 +1,9 @@
+{
+    "name":"nyantifier",
+    "version":"0.1.0",
+    "dependencies": {
+        "request":    "2.36.x",
+        "feedparser": "0.17.x"
+    },
+    "private":true
+}
