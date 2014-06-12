@@ -1,4 +1,14 @@
 {
-    "chat_id": 3,
-    "template": "### {title}\n> {name}\nКатегория: {category}\nСсылка: {link}\nХотлинк: {hotlink}\nДата: {datetime}"
+    "templateNew":    "# {title}\n> {name}\nКатегория: {category}\nСсылка: {link}\nХотлинк: {hotlink}\nДата: {datetime}",
+    "templateUpdate": "**ОБНОВЛЕНИЕ РАЗДАЧИ**\n# {title}\n> {name}\nКатегория: {category}\nСсылка: {link}\nХотлинк: {hotlink}\nДата: {datetime}",
+    "filters": [
+        {
+            "title":     "Glasslip",
+            "include": [ "glasslip" ],
+            "exclude": [ "480", "1080", "[naruto-grand.ru]", "[ae]", "[okamine]" ],
+            "banner":    "photo249449089_332141877",
+            "updates":   true,
+            "users":   [ 90155411 ]
+        }
+    ]
 }

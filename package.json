@@ -3,7 +3,8 @@
     "version":"0.1.0",
     "dependencies": {
         "request":    "2.36.x",
-        "feedparser": "0.17.x"
+        "feedparser": "0.17.x",
+        "moment":     "2.6.x"
     },
     "private":true
 }
