@@ -1,7 +1,10 @@
 var FeedParser = require('feedparser')
   , request    = require('request')
   , fs         = require('fs')
-  , moment     = require('moment');
+  , moment     = require('moment')
+  , url        = require('url');
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var file = function (x) {
     try {
@@ -21,8 +24,50 @@ var format = function (template, data) {
     });
 };
 
+var send = function (options) {
+    var call = {
+        protocol: 'https',
+        hostname: 'api.vk.com',
+        pathname: 'method/messages.send',
+        query: {
+            user_id:      options.user_id,
+            chat_id:      options.chat_id,
+            message:      options.message,
+            attachment:   options.banner,
+            access_token: token
+        }
+    };
+
+    // console.log(url.format(call));
+
+    request(url.format(call), function(e, res) {
+        if (e) throw e;
+
+        console.log(res.body);
+    });
+};
+
 var notify = function (data) {
-    //
+    log[link] = data.datetime;
+    var message = format(data.update ? config.templateUpdate : config.templateNew, data);
+
+    if (data.users) data.users.forEach(function (user) {
+        send({
+            message: message,
+            banner:  data.banner,
+            user_id: user
+        });
+    });
+
+    if (data.chats) data.chats.forEach(function (chat) {
+        send({
+            message: message,
+            banner:  data.banner,
+            chat_id: chat
+        });
+    });
+
+    console.log(message + '\n');
 };
 
 var filter = function (item) {
@@ -34,7 +79,7 @@ var filter = function (item) {
         return categories[x] || x;
     }).join(', ');
     config.filters.forEach(function (filter) {
-        var include = false, exclude = false;
+        var include = false, exclude = false, data;
         filter.include.forEach(function (i) {
             include = name.toLowerCase().indexOf(i) > -1;
         });
@@ -43,21 +88,26 @@ var filter = function (item) {
         });
 
         if (include && !exclude) {
-
-            // Уведомить во вконтактик
-
-            if (log[link] && (log[link] != datetime))
-
-            log[link] = datetime;
-
-            console.log(format(config.templateNew, {
+            data = {
                 title: filter.title,
                 name: name,
                 category: category,
                 link: link,
                 hotlink: hotlink,
-                datetime: datetime
-            }));
+                datetime: datetime,
+                users: filter.users,
+                chats: filter.chats,
+                banner: filter.banner
+            };
+
+            if (log[link]) {
+                if ((log[link] != datetime) && filter.updates) {
+                    data.update = true;
+                    notify(data);
+                }
+            } else {
+                notify(data);
+            }
         }
     });
 };
@@ -65,6 +115,8 @@ var filter = function (item) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// TODO: Отслеживать изменения конфига и перезагружать
 
 var config = json('nyantifier.json');
 
@@ -97,6 +149,17 @@ var categories = {
     'Graphics':                           'арты'
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -120,12 +183,13 @@ var main = function () {
 
         while (item = this.read()) filter(item);
     });
+
+    rss.on('end', function () {
+        setTimeout(main, 3000);
+    });
 };
 
-setInterval(function () {
-    console.log(log);
-    main();
-}, 10000);
+main();
 
 
 
